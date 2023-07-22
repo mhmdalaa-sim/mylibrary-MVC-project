@@ -1,0 +1,85 @@
+﻿@model IEnumerable<Book>
+
+
+<h1>
+    Welcome @ViewBag.userName <h1>
+    
+<h2>Books</h2>
+
+<form method="get" action="@Url.Action("Index")">
+    <div>
+        <label for="searchString">Search:</label>
+        <input type="text" name="searchString" id="searchString" value="@ViewBag.SearchString" />
+    </div>
+    <div>
+        <label for="year">Year:</label>
+        <input type="number" name="year" id="year" value="@ViewBag.year" />
+    </div>
+    <button type="submit">Search</button>
+</form>
+
+@if (Model == null || Model.Count() == 0)
+{
+    <p>No books found</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Author</th>
+                <th>Genre</th>
+                <th>Year</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var book in Model)
+            {
+                <tr>
+                    <td>@book.Title</td>
+                    <td>@(book.Author?.Name ?? "")</td>
+                    <td>@(book.Genre?.Name ?? "")</td>
+                    <td>@book.year</td>
+                    <td>
+                        <a asp-action="UpdateBook" asp-route-id="@book.Id">Edit</a> |
+                        <a asp-action="DeleteBook" asp-route-id="@book.Id">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+            <div class="pagination">
+    @if (ViewBag.Page == 1)
+    {
+            <span class="disabled">Previous</span>
+    }
+    else
+    {
+        <a href="@Url.Action("Index", new { page = ViewBag.Page - 1, searchString = ViewBag.SearchString, year = ViewBag.year })"><button>Previous</button></a>
+    }
+
+    @for (int i = 1; i <= ViewBag.TotalPages; i++)
+    {  
+        if (i == ViewBag.Page)
+        {
+            <span class="current"><button>@i</button></span>
+        }
+        else
+        {
+            <a href="@Url.Action("Index", new { page = i, searchString = ViewBag.SearchString, year = ViewBag.year })"><button>@i</button> </a>
+        }
+    }
+
+    @if (ViewBag.Page == ViewBag.TotalPages)
+    {
+            <span class="disabled">Next</span>
+    }
+    else
+    {
+        <a href="@Url.Action("Index", new { page = ViewBag.Page + 1, searchString = ViewBag.SearchString, year = ViewBag.year })"><button>Next</button></a>
+    }
+</div>
